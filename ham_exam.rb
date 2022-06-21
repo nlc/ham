@@ -42,10 +42,15 @@ class Question
   end
 end
 
+if ENV['HAM_DIR'].nil?
+  puts '$HAM_DIR environment variable not set!'
+  exit 1
+end
+
 num_questions = ARGV.shift&.to_i || 1
 
 questions =
-  File.read('/Users/nate/ham.txt').split("~~\n").map.with_index do |question_raw, i|
+  File.read("#{ENV['HAM_DIR']}/technician_06302022.txt").split("~~\n").map.with_index do |question_raw, i|
     lines = question_raw.split(/\n/)
 
     raise "not enough lines in question #{i}!" if lines.length < 6
