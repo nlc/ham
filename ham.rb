@@ -42,15 +42,20 @@ class Question
   end
 end
 
-if ENV['HAM_DIR'].nil?
-  puts '$HAM_DIR environment variable not set!'
-  exit 1
+target_file = 'technician_06302022.txt'
+if !File.exist?(target_file)
+  if ENV['HAM_DIR'].nil?
+    puts '$HAM_DIR environment variable not set!'
+    exit 1
+  else
+    target_file = "#{ENV['HAM_DIR']}/#{target_file}"
+  end
 end
 
 num_questions = ARGV.shift&.to_i || 1
 
 questions =
-  File.read("#{ENV['HAM_DIR']}/technician_06302022.txt").split("~~\n").map.with_index do |question_raw, i|
+  File.read(target_file).split("~~\n").map.with_index do |question_raw, i|
     lines = question_raw.split(/\n/)
 
     raise "not enough lines in question #{i}!" if lines.length < 6
