@@ -42,7 +42,7 @@ class Question
   end
 end
 
-target_file = 'technician_06302022.txt'
+target_file = 'general_2023.txt'
 if !File.exist?(target_file)
   if ENV['HAM_DIR'].nil?
     puts '$HAM_DIR environment variable not set!'
@@ -55,19 +55,23 @@ end
 num_questions = ARGV.shift&.to_i || 1
 
 questions =
-  File.read(target_file).split("~~\n").map.with_index do |question_raw, i|
-    lines = question_raw.split(/\n/)
+  File.read(target_file).split(/~~\r*\n/).map.with_index do |question_raw, i|
+    lines = question_raw.split(/\r*\n/)
 
     raise "not enough lines in question #{i}!" if lines.length < 6
 
-    _, id, correct_answer_letter = lines[0].match(/(T\d[A-Z]\d+) \(([ABCD])\)/).to_a
+    _, id, correct_answer_letter = lines[0].match(/([TGE]\d[A-Z]\d+) \(([A-D])\)/).to_a
     correct_answer_index = %w[A B C D].index(correct_answer_letter)
 
     prompt = lines[1]
 
     answers = lines[2, 4].map { |answer| answer.gsub(/^[ABCD]\.\s*/, '') }
 
-    correct_answer = answers.delete_at(correct_answer_index)
+    begin
+      correct_answer = answers.delete_at(correct_answer_index)
+    rescue
+      p lines
+    end
 
     Question.new(id, prompt, correct_answer, answers)
   end
